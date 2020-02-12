@@ -1,15 +1,18 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import description from '@/components/description'
 Vue.use(Router)
 let router = new Router({
     mode:'history',
     routes: [
       { 
         path: '/',
-        //component: 'description'
+        name: 'top',
+        component: description
       },
       {
           path: '/hit',
+          name: 'hit',
           //component: 'hitsGraph'
       },
       {
@@ -19,7 +22,8 @@ let router = new Router({
       },
       {
         path: '/ball',
-       //component: 'ballsGraph'
+        name: 'ball',
+        //component: 'ballsGraph'
     },
     ]
   })
