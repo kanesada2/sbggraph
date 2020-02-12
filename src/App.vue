@@ -47,8 +47,8 @@ h2 {
     font-size: 24px;
     line-height: 1.6em;
     padding: 0 0 2px 12px;
-    border-left: 4px solid #444;
-    border-bottom: 1px solid #888;
+    border-left: 4px solid #545c64;
+    border-bottom: 1px solid #545c64;
 }
 .title-logo{
   font-size: 150% !important;

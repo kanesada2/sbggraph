@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import description from '@/components/description'
+import hitsGraph from '@/components/hits_graph'
 Vue.use(Router)
 let router = new Router({
     mode:'history',
@@ -13,7 +14,7 @@ let router = new Router({
       {
           path: '/hit',
           name: 'hit',
-          //component: 'hitsGraph'
+          component: hitsGraph
       },
       {
         path: '/hit/:id',
