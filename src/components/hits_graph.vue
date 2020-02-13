@@ -5,7 +5,7 @@
         <el-tab-pane label="SWING" name="absoluteBats">ミートポイント(そこを狙って振った場所)の絶対座標</el-tab-pane>
         <el-tab-pane label="IMPACT" name="relativeHits">ミートポイントから見た打ったボールの相対的な座標</el-tab-pane>
     </el-tabs>
-      <vue-plotly :data="data" :layout="layout" :options="options"/>
+      <vue-plotly :data="data" :layout="layout" :options="options" @click="showDialog"/>
       <el-card class="box-card">
         <div slot="header" class="clearfix">
             <span>フィルター</span>
@@ -31,6 +31,17 @@
         </el-form-item>
       </el-form>
       </el-card>
+      <el-dialog
+        title="打球情報"
+        :visible.sync="pointSelected"
+        width="30%"
+      >
+        <span>打球の情報表示</span>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="pointSelected = false">閉じる</el-button>
+            <el-button type="primary" @click="$router.push(targetUrl)">詳細</el-button>
+        </span>
+      </el-dialog>
   </div>
 </template>
 
@@ -46,7 +57,10 @@ export default {
             data: [{ x: [1, 3], y: [2, 4] }],
             layout: {},
             options: {},
-            activeName: 'absoluteHits',
+            ids: [1,5],
+            activeName: "absoluteHits",
+            targetUrl: "",
+            pointSelected: false,
             filter:{
                 batterId: 0,
                 pitcherId: 0,
@@ -64,6 +78,11 @@ export default {
         },
         extract(e){
              console.log(e);
+        },
+        showDialog(e){
+            const index = e.points[0].pointNumber;
+            this.targetUrl = "/hits/" + this.ids[index];
+            this.pointSelected = true;
         }
     }
 }
