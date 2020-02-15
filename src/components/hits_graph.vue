@@ -5,7 +5,7 @@
         <el-tab-pane label="SWING" name="absoluteBats">ミートポイント(そこを狙って振った場所)の絶対座標</el-tab-pane>
         <el-tab-pane label="IMPACT" name="relativeHits">ミートポイントから見た打ったボールの相対的な座標</el-tab-pane>
     </el-tabs>
-      <vue-plotly :data="data" :layout="layout" :options="options" @click="showDialog"/>
+      <Plotly :data="data" :layout="layout" @click="showDialog"/>
       <el-card class="box-card">
         <div slot="header" class="clearfix">
             <span>フィルター</span>
@@ -46,16 +46,28 @@
 </template>
 
 <script>
-import VuePlotly from '@statnett/vue-plotly'
+import { Plotly } from 'vue-plotly'
 
 export default {
     components: {
-        VuePlotly
+        Plotly
     },
     data: function () {
         return {
-            data: [{ x: [1, 3], y: [2, 4] }],
-            layout: {},
+            data: [{ 
+                    x: [1, 3], 
+                    y: [2, 4], 
+                    z: [0, 5],
+                    mode: 'markers',
+                    marker: {
+                        size: 5,
+                        color: 'rgba(255, 0, 0, 1.0)',
+                        opacity: 0.8
+                    },
+                    type: 'scatter3d'
+
+            }],
+            layout:{},
             options: {},
             ids: [1,5],
             activeName: "absoluteHits",
