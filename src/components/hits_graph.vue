@@ -94,6 +94,13 @@ export default {
     methods: {
         selectType(tab, e) {
             console.log(tab, e);
+            this.$axios.get('https://httpbin.org/get')
+                .then((response) => {
+                    console.log(response.data.origin);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
             // 開くタブごとにデータを差し替える処理
         },
         extract(e){
