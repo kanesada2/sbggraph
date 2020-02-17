@@ -22,7 +22,7 @@
         <el-form-item label="飛距離">
             <el-input-number v-model="filter.distance.threshold" class="filterInput"/>
             <el-select v-model="filter.distance.condtion">
-                <el-option label="以上" value=">" default/>
+                <el-option label="以上" value=">"/>
                 <el-option label="以下" value="<"/>
             </el-select>
         </el-form-item>
@@ -72,7 +72,8 @@ export default {
                 paper_bgcolor : "#dcdde1",
                 scene: {
                     camera: {
-                        up:{x: 0, y: 1, z: 0}
+                        up:{x: 0, y: 1, z: 0},
+                        eye:{x: 0, y: 0, z: 1}
                     },
                 }
             },
