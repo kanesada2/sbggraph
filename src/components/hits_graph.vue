@@ -47,6 +47,7 @@
 
 <script>
 import { Plotly } from 'vue-plotly'
+import httpmixin from '@/mixins/httpmixin'
 
 export default {
     components: {
@@ -89,12 +90,14 @@ export default {
                     threshold: 0,
                     condition: ">"
                 }
-            }
+            },
+            resourcePath : 'hits'
         }
     },
+    mixins: [httpmixin],
     methods: {
         selectType(tab, e) {
-            console.log(tab, e);
+            console.log(tab, e)
             this.$axios.get('https://httpbin.org/get')
                 .then((response) => {
                     console.log(response.data.origin);
