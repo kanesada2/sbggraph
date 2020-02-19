@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import description from '@/components/description'
 import hitsGraph from '@/components/hits_graph'
 import ballsGraph from '@/components/balls_graph'
+import hitBallGraph from '@/components/hit_ball_graph'
 Vue.use(Router)
 let router = new Router({
     mode:'history',
@@ -20,7 +21,7 @@ let router = new Router({
       {
         path: '/hit/:id',
         name: 'hit-ball',
-        //component: 'hit-ballGraph'
+        component: hitBallGraph
       },
       {
         path: '/ball',

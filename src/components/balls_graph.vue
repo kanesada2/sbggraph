@@ -47,10 +47,11 @@ export default {
     },
     data: function () {
         return {
-            data: [{x:[1,2], y: [1,2], z: [3,4.5],
+            data: [{
+                    x:[2,2.2], y: [1.1,1.15], z: [18,17.83],
                     mode: 'lines',
                     marker: {
-                        size: 2,
+                        size: 1,
                         color: 'rgba(255, 0, 0, 1.0)',
                         opacity: 0.4
                     },
@@ -62,7 +63,10 @@ export default {
                 scene: {
                     camera: {
                         up:{x: 0, y: 1, z: 0},
-                        eye:{x: 0, y: 0, z: 1}
+                        eye:{x: 0, y: 0, z: 1},
+                    },
+                    aspectratio: {
+                        x: 1, y: 1, z: 18,
                     },
                     zaxis: {range: [0, 18]}
                 },
