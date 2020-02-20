@@ -5,7 +5,7 @@
         <el-tab-pane label="SWING" name="absoluteBats">ミートポイント(そこを狙って振った場所)の絶対座標</el-tab-pane>
         <el-tab-pane label="IMPACT" name="relativeHits">ミートポイントから見た打ったボールの相対的な座標</el-tab-pane>
     </el-tabs>
-      <Plotly :data="data" :layout="layout" @click="showDialog"/>
+      <Plotly :data="data" :layout="layout" @click="showDialog" v-loading="loading"/>
       <el-card class="box-card">
         <div slot="header" class="clearfix">
             <span>フィルター</span>
@@ -47,7 +47,7 @@
 
 <script>
 import { Plotly } from 'vue-plotly'
-import httpmixin from '@/mixins/httpmixin'
+import datamixin from '@/mixins/datamixin'
 
 export default {
     components: {
@@ -91,21 +91,14 @@ export default {
                     condition: ">"
                 }
             },
-            resourcePath : 'hits'
+            resourcePath : 'hits',
         }
     },
-    mixins: [httpmixin],
+    mixins: [datamixin],
     methods: {
         selectType(tab, e) {
-            console.log(tab, e)
-            this.$axios.get('https://httpbin.org/get')
-                .then((response) => {
-                    console.log(response.data.origin);
-                })
-                .catch((e) => {
-                    console.log(e);
-                });
-            // 開くタブごとにデータを差し替える処理
+            console.log(tab,e)
+            this.setupData()
         },
         extract(e){
              console.log(e);
