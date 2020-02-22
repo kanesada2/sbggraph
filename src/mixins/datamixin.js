@@ -6,34 +6,53 @@ export default {
       resourcePath: '',
       records: null,
       query: {},
+      beforeQuery: {},
+      players: [],
       header: authConfig.token,
       loading: true
     }
   },
   mounted(){
+    this.preparePlayerData()
     this.setupData();
   },
   methods: {
     setupData(){
       this.loading = true
-      if(!this.records){
+      console.log(this.query)
+      console.log(this.beforeQuery)
+      if(!this.records || this.query != this.beforeQuery){
         this.fetchRecords()
       }
       this.recordsToData()
+      this.beforeQuery = JSON.parse(JSON.stringify(this.query))
       this.loading = false
     },
     fetchRecords(){
-      const url = this.apiUrlBase + this.resourcePath
-      this.$axios.get(url)
+      let url = this.apiUrlBase + this.resourcePath
+      const instance = this
+      console.log(url)
+      this.$axios.get(url, {'params': this.query})
           .then((response) => {
-            this.records = response.data;
-            console.log(response.data.items)
+            instance.records = response.data;
+            console.log(instance.records)
           })
           .catch((e) => {
             console.log(e);
           })
     },
     recordsToData(){
+    },
+    preparePlayerData(){
+      const url = this.apiUrlBase + "players/"
+      const instance = this
+      this.$axios.get(url)
+          .then((response) => {
+            instance.players = response.data.items
+          })
+          .catch((e) => {
+            console.log(e);
+          })
     }
    }
   }
