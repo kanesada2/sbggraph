@@ -1,6 +1,6 @@
 <template>
   <div>
-      <el-tabs v-model="activeName" @tab-click="selectType" tabPosition="bottom" stretch>
+      <el-tabs v-model="activeName" @tab-click="setupData" tabPosition="bottom" stretch>
         <el-tab-pane label="COURSE" name="absoluteHits">打ったボールの絶対座標</el-tab-pane>
         <el-tab-pane label="SWING" name="absoluteBats">ミートポイント(そこを狙って振った場所)の絶対座標</el-tab-pane>
         <el-tab-pane label="IMPACT" name="relativeHits">ミートポイントから見た打ったボールの相対的な座標</el-tab-pane>
@@ -13,16 +13,6 @@
         <el-form ref="form" :model="filter" label-width="20%">
         <el-form-item label="打者">
             <el-select v-model="filter.batterId" placeholder="プレイヤーID">
-                <el-option label="指定なし" :value="null"/>
-                <el-option
-                v-for="player in players"
-                :key="player.id"
-                :label="player.id"
-                :value="player.id" />
-            </el-select>
-        </el-form-item>
-        <el-form-item label="投手">
-            <el-select v-model="filter.pitcherId" placeholder="プレイヤーID">
                 <el-option label="指定なし" :value="null"/>
                 <el-option
                 v-for="player in players"
@@ -75,20 +65,10 @@ export default {
     mixins: [datamixin],
     data: function () {
         return {
-            data: [{ 
-                    x:1,y:1,z:1,
-                    mode: 'markers',
-                    distance: 120,
-                    marker: {
-                        size: 2,
-                        color: 'rgba(255, 0, 0, 1.0)',
-                        opacity: 0.4
-                    },
-                    type: 'scatter3d'
-
-            }],
+            data: [],
             layout:{
                 paper_bgcolor : "#dcdde1",
+                plot_bgcolor : "#dcdde1",
                 scene: {
                     camera: {
                         up:{x: 0, y: 1, z: 0},
@@ -105,7 +85,6 @@ export default {
             ],
             filter:{
                 batterId: null,
-                pitcherId: null,
                 ballType: null,
                 distance:{
                     threshold: 0,
@@ -116,10 +95,6 @@ export default {
         }
     },
     methods: {
-        selectType(tab, e) {
-            console.log(tab,e)
-            this.setupData()
-        },
         extract(){
             if(this.filter.ballType){
                 this.resourcePath = 'typedhits/' + this.filter.ballType;
@@ -127,9 +102,6 @@ export default {
             let filterClause = {};
             if(this.filter.batterId){
                 filterClause.player_id = this.filter.batterId;
-            }
-            if(this.filter.pitcherId){
-                //filterClause.pitcher_id = this.filter.pitcherId
             }
             if(this.filter.distance.condition){
                 filterClause.distance = {[this.filter.distance.condition] :this.filter.distance.threshold};
@@ -141,11 +113,58 @@ export default {
         },
         showDialog(e){
             const index = e.points[0].pointNumber;
-            this.targetUrl = "/hits/" + this.ids[index];
+            this.targetUrl = "/hits/" + this.data[0].id[index];
             this.pointSelected = true;
         },
-        processData(){
-            
+        recordsToData(){
+            let data = { 
+                x:[],
+                y:[],
+                z:[],
+                id:[],
+                mode: 'markers',
+                marker: {
+                    size: 2,
+                    color: [],
+                    opacity: 1.0
+                },
+                type: 'scatter3d'
+            }
+            let processer = (record => {console.log(record)});
+            switch(this.activeName){
+                case "absoluteHits":
+                    processer = (record => {
+                        data.x.push(record.hitx)
+                        data.y.push(record.hity)
+                        data.z.push(record.hitz)
+                        data.id.push(record.id)
+                        const color = 'rgba(255, 0, 0, ' + record.distance / 200 + ')'
+                        data.marker.color.push(color)
+                    })
+                    break
+                case "absoluteBats":
+                    processer = (record => {
+                        data.x.push(record.batx)
+                        data.y.push(record.baty)
+                        data.z.push(record.batz)
+                        data.id.push(record.id)
+                        const color = 'rgba(255, 0, 0, ' + record.distance / 200 + ')'
+                        data.marker.color.push(color)
+                    })
+                    break
+                case "relativeHits":
+                    processer = (record => {
+                        data.x.push(record.hitx - record.batx)
+                        data.y.push(record.hity - record.baty)
+                        data.z.push(record.hitz - record.batz)
+                        data.id.push(record.id)
+                        const color = 'rgba(255, 0, 0, ' + record.distance / 200 + ')'
+                        data.marker.color.push(color)
+                    })
+                    break
+            }
+            this.records.items.forEach(processer)
+            this.data = [data]
         }
     }
 }

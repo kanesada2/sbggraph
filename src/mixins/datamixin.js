@@ -17,28 +17,24 @@ export default {
     this.setupData();
   },
   methods: {
-    setupData(){
+    async setupData(){
       this.loading = true
-      console.log(this.query)
-      console.log(this.beforeQuery)
       if(!this.records || this.query != this.beforeQuery){
-        this.fetchRecords()
+        await this.fetchRecords()
       }
       this.recordsToData()
       this.beforeQuery = JSON.parse(JSON.stringify(this.query))
       this.loading = false
     },
-    fetchRecords(){
+    async fetchRecords(){
       let url = this.apiUrlBase + this.resourcePath
       const instance = this
-      console.log(url)
-      this.$axios.get(url, {'params': this.query})
+      await this.$axios.get(url, {'params': this.query})
           .then((response) => {
             instance.records = response.data;
-            console.log(instance.records)
           })
           .catch((e) => {
-            console.log(e);
+            console.log(e)
           })
     },
     recordsToData(){

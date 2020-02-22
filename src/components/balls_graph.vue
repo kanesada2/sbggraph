@@ -8,14 +8,17 @@
         <el-form ref="form" :model="filter" label-width="20%">
         <el-form-item label="投手">
             <el-select v-model="filter.pitcherId" placeholder="プレイヤーID">
-            </el-select>
-        </el-form-item>
-        <el-form-item label="投手">
-            <el-select v-model="filter.batterId" placeholder="プレイヤーID">
+                <el-option label="指定なし" :value="null"/>
+                <el-option
+                v-for="player in players"
+                :key="player.id"
+                :label="player.id"
+                :value="player.id" />
             </el-select>
         </el-form-item>
         <el-form-item label="球種">
             <el-select v-model="filter.ballType">
+                <el-option label="指定なし" :value="null"/>
                 <el-option v-for="ballType in ballTypes" :key=ballType :label=ballType :value=ballType />
             </el-select>
         </el-form-item>
@@ -79,9 +82,8 @@ export default {
                 "Fast", "Slider", "Curve", "Fork", "Shuuto", "Sinker", "Knuckle"
             ],
             filter:{
-                batterId: 0,
                 pitcherId: 0,
-                ballType: "Fast",
+                ballType: "",
             }
         }
     },
@@ -95,8 +97,7 @@ export default {
                 });
     },
     methods: {
-        extract(e){
-             console.log(e);
+        extract(){
         },
         showDialog(e){
             const index = e.points[0].pointNumber;
