@@ -1,6 +1,14 @@
 <template>
   <div>
-      <Plotly :data="data" :layout="layout" @click="showDialog"/>
+      <div class="description">
+          <p>色が白っぽいものほど優秀（打球が弱い）ベース色は↓</p>
+          <span class="sample" 
+           v-for="(color, ballType) in ballTypes" :key=ballType 
+           :style="'background:' + color + ' 1.0);'">
+          {{ballType}}
+          </span>
+      </div>
+      <Plotly :data="data" :layout="layout" @click="showDialog" v-loading="loading" />
       <el-card class="box-card">
         <div slot="header" class="clearfix">
             <span>フィルター</span>
@@ -19,7 +27,7 @@
         <el-form-item label="球種">
             <el-select v-model="filter.ballType">
                 <el-option label="指定なし" :value="null"/>
-                <el-option v-for="ballType in ballTypes" :key=ballType :label=ballType :value=ballType />
+                <el-option v-for="ballType in Object.keys(ballTypes)" :key=ballType :label=ballType :value=ballType />
             </el-select>
         </el-form-item>
         <el-form-item>
@@ -43,67 +51,118 @@
 
 <script>
 import { Plotly } from 'vue-plotly'
+import datamixin from '@/mixins/datamixin'
 
 export default {
     components: {
         Plotly
     },
+    mixins: [datamixin],
     data: function () {
         return {
-            data: [{
-                    x:[2,2.2], y: [1.1,1.15], z: [18,17.83],
-                    mode: 'lines',
-                    marker: {
-                        size: 1,
-                        color: 'rgba(255, 0, 0, 1.0)',
-                        opacity: 0.4
-                    },
-                    type: 'scatter3d'
-
-            }],
+            data: [],
             layout:{
                 paper_bgcolor : "#dcdde1",
+                plot_bgcolor : "#dcdde1",
                 scene: {
                     camera: {
                         up:{x: 0, y: 1, z: 0},
                         eye:{x: 0, y: 0, z: 1},
                     },
-                    aspectratio: {
-                        x: 1, y: 1, z: 18,
-                    },
-                    zaxis: {range: [0, 18]}
+                    xaxis: {range: [-5, 5]},
+                    yaxis: {range: [0, 5]},
+                    zaxis: {range: [10, 20]}
                 },
             },
             options: {},
-            ids: [1,5],
+            ids: [],
             targetUrl: "",
             pointSelected: false,
-            ballTypes:[
-                "Fast", "Slider", "Curve", "Fork", "Shuuto", "Sinker", "Knuckle"
-            ],
+            ballTypes:{
+                "Fast": "rgba(231, 76, 60,", 
+                "Slider": "rgba(241, 196, 15,", 
+                "Curve": "rgba(230, 126, 34,", 
+                "Fork": "rgba(52, 152, 219,", 
+                "Shuuto": "rgba(39, 174, 96,", 
+                "Sinker": "rgba(22, 160, 133,", 
+                "Knuckle": "rgba(142, 68, 173,"
+            },
             filter:{
-                pitcherId: 0,
-                ballType: "",
-            }
+                pitcherId: null,
+                ballType: null,
+            },
+            resourcePath: 'pitches/'
         }
-    },
-    mounted(){
-         this.$axios.get('https://httpbin.org/get')
-                .then((response) => {
-                    console.log(response.data.origin);
-                })
-                .catch((e) => {
-                    console.log(e);
-                });
     },
     methods: {
         extract(){
+            let filterClause = {};
+            if(this.filter.ballType){
+                filterClause.name = this.filter.ballType
+            }
+            if(this.filter.pitcherId){
+                filterClause.player_id = this.filter.pitcherId
+            }
+            if(Object.keys(filterClause).length > 0){
+                this.query.q = JSON.stringify(filterClause);
+            }
+            this.setupData()
         },
         showDialog(e){
             const index = e.points[0].pointNumber;
-            this.targetUrl = "/balls/" + this.ids[index];
+            this.targetUrl = "/hit/" + this.ids[index];
             this.pointSelected = true;
+        },
+        recordsToData(){
+            this.data = []
+            this.ids = []
+            this.records.items.forEach(record => {
+                 let datum =  {
+                    x:[], y: [], z: [],
+                    mode: 'lines',
+                    name: "",
+                    marker: {
+                        size: 1,
+                        color: 'rgba(0, 0, 0, 1.0)',
+                        opacity: 1
+                    },
+                    type: 'scatter3d'
+
+                }
+                datum.x[0] = record.fromx
+                datum.x[1] = record.tox
+                datum.y[0] = record.fromy
+                datum.y[1] = record.toy
+                datum.z[0] = record.fromz
+                datum.z[1] = record.toz
+                datum.name = record.name
+                if(record.name in this.ballTypes){
+                    datum.marker.color = this.ballTypes[record.name]
+                }else{
+                    datum.marker.color = 'rgba(0, 0, 0,'
+                }
+                let opacity = 0.01
+                if(record.hitvelocity > 0){
+                    opacity = record.hitvelocity / 5
+                }
+                datum.marker.color += opacity + ')'
+                this.data.push(datum)
+                this.ids.push(record.hitid)
+            })
         }
     }
 }
 </script>
+
+<style scoped>
+ .sample{
+     margin-right: 1em;
+     color: #eee;
+     border-radius: 1em;
+     padding: 0 .5em;
+     font-size: 70%;
+ }
+ .description {
+     margin: .5em 0;
+ }
+</style>
