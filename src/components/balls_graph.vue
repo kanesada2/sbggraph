@@ -129,8 +129,7 @@ export default {
             this.selectedBall.y = e.points[0].data.y[0]
             this.selectedBall.z = e.points[0].data.z[0]
 
-            const index = e.points[0].pointNumber;
-            this.targetUrl = "/hit/" + this.hitIds[index];
+            this.targetUrl = "/hit/" + e.points[0].data.hitId
             this.pointSelected = true;
         },
         recordsToData(){
@@ -140,6 +139,7 @@ export default {
                  let datum =  {
                     x:[], y: [], z: [],
                     playerId: null,
+                    hitId: null,
                     mode: 'lines',
                     name: "",
                     marker: {
@@ -158,6 +158,7 @@ export default {
                 datum.z[1] = record.toz
                 datum.name = record.name
                 datum.playerId = record.player_id 
+                datum.hitId = record.hitid;
                 if(record.name in this.ballTypes){
                     datum.marker.color = this.ballTypes[record.name]
                 }else{
@@ -169,7 +170,6 @@ export default {
                 }
                 datum.marker.color += opacity + ')'
                 this.data.push(datum)
-                this.hitIds.push(record.hitid)
             })
         }
     }

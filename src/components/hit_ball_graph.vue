@@ -6,8 +6,10 @@
             <span>ボール情報</span>
           </div>
           <ul>
+              <li>投手ID:{{this.ballInfo.pitcherId}}</li>
               <li>球種:{{this.ballInfo.name}}</li>
               <li>球速:{{this.ballInfo.velocity}}km/h</li>
+              <li>打者ID:{{this.hitInfo.batterId}}</li>
               <li>打球速度:{{this.hitInfo.velocity}}km/h</li>
               <li>打出角度:{{this.hitInfo.pitch}}度</li>
               <li>飛距離:{{this.hitInfo.distance}}m</li>
@@ -44,10 +46,12 @@ export default {
             },
             options: {},
             ballInfo: {
+                pitcherId: "取得中...",
                 velocity: "取得中...",
                 name: "取得中..."
             },
             hitInfo: {
+                batterId: "取得中...",
                 velocity: "取得中...",
                 pitch: "取得中...",
                 distance: "取得中...",
@@ -79,7 +83,7 @@ export default {
                     mode: 'markers',
                     name: 'Impact-Point',
                     marker: {
-                        size: 2,
+                        size: 3,
                         color: '#c23616',
                     },
                     type: 'scatter3d'
@@ -88,7 +92,7 @@ export default {
                     mode: 'markers',
                     name: 'Swing-Point',
                     marker: {
-                        size: 2,
+                        size: 3,
                         color: '#fbc531',
                     },
                     type: 'scatter3d'
@@ -100,15 +104,17 @@ export default {
                     z: [this.records.fromz, this.records.toz],
                     mode: 'lines',
                     name: this.records.name,
-                    marker: {
-                        size: 2,
+                    line: {
+                        width: 5,
                         color: color,
                     },
                     type: 'scatter3d'
             })
             const ballVel = Math.sqrt(Math.pow(this.records.tox - this.records.fromx, 2) + Math.pow(this.records.toy - this.records.fromy, 2) + Math.pow(this.records.toz - this.records.fromz, 2))
+            this.ballInfo.pitcherId = this.records.player_id
             this.ballInfo.velocity = Math.round(ballVel * 720) / 10
             this.ballInfo.name = this.records.name
+            this.hitInfo.batterId = this.records.batter_id
             this.hitInfo.velocity = Math.round(this.records.velocity * 720) / 10
             this.hitInfo.pitch = Math.round(this.records.pitch * 10) / 10
             this.hitInfo.distance = Math.round(this.records.distance * 10) / 10
