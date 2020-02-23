@@ -22,6 +22,7 @@ export default {
       }
       this.recordsToData()
       this.beforeQuery = JSON.parse(JSON.stringify(this.query))
+      this.query = {}
       this.loading = false
     },
     async fetchRecords(){

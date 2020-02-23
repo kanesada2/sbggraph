@@ -115,6 +115,8 @@ export default {
         extract(){
             if(this.filter.ballType){
                 this.resourcePath = 'typedhits/' + this.filter.ballType;
+            }else{
+                this.resourcePath = 'hits/'
             }
             let filterClause = {};
             if(this.filter.batterId){
