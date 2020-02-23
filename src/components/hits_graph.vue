@@ -46,6 +46,13 @@
         width="30%"
       >
         <span>打球の情報表示</span>
+        <ul>
+            <li>打者ID: {{selectedHit.batterId}}</li>
+            <li>球種: {{selectedHit.ballType}}</li>
+            <li>X: {{selectedHit.x}}</li>
+            <li>Y: {{selectedHit.y}}</li>
+            <li>Z: {{selectedHit.z}}</li>
+        </ul>
         <span slot="footer" class="dialog-footer">
             <el-button @click="pointSelected = false">閉じる</el-button>
             <el-button type="primary" @click="$router.push(targetUrl)">詳細</el-button>
@@ -74,12 +81,22 @@ export default {
                         up:{x: 0, y: 1, z: 0},
                         eye:{x: 0, y: 0, z: 1}
                     },
+                    xaxis: {range: [-5, 5]},
+                    yaxis: {range: [-1, 4]},
+                    zaxis: {range: [-5, 5]}
                 }
             },
             options: {},
             activeName: "absoluteHits",
             targetUrl: "",
             pointSelected: false,
+            selectedHit: {
+                batterId: null,
+                ballType: "",
+                x: null,
+                y: null,
+                z: null
+            },
             ballTypes:[
                 "Fast", "Slider", "Curve", "Fork", "Shuuto", "Sinker", "Knuckle"
             ],
@@ -113,7 +130,13 @@ export default {
         },
         showDialog(e){
             const index = e.points[0].pointNumber;
-            this.targetUrl = "/hits/" + this.data[0].id[index];
+            this.selectedHit.batterId = e.points[0].data.playerId[index]
+            this.selectedHit.ballType = e.points[0].data.ballType[index]
+            this.selectedHit.x = e.points[0].data.x[index]
+            this.selectedHit.y = e.points[0].data.y[index]
+            this.selectedHit.z = e.points[0].data.z[index]
+
+            this.targetUrl = "/hit/" + this.data[0].id[index];
             this.pointSelected = true;
         },
         recordsToData(){
@@ -122,6 +145,8 @@ export default {
                 y:[],
                 z:[],
                 id:[],
+                ballType: [],
+                playerId: [],
                 mode: 'markers',
                 marker: {
                     size: 2,
@@ -138,8 +163,13 @@ export default {
                         data.y.push(record.hity)
                         data.z.push(record.hitz)
                         data.id.push(record.id)
+                        data.ballType.push(record.ball_type)
+                        data.playerId.push(record.player_id)
                         const color = 'rgba(255, 0, 0, ' + record.distance / 200 + ')'
                         data.marker.color.push(color)
+                        this.layout.scene.xaxis = {range:[-5, 5]}
+                        this.layout.scene.yaxis = {range:[-1, 4]}
+                        this.layout.scene.zaxis = {range:[-5, 5]}
                     })
                     break
                 case "absoluteBats":
@@ -148,8 +178,13 @@ export default {
                         data.y.push(record.baty)
                         data.z.push(record.batz)
                         data.id.push(record.id)
+                        data.ballType.push(record.ball_type)
+                        data.playerId.push(record.player_id)
                         const color = 'rgba(255, 0, 0, ' + record.distance / 200 + ')'
                         data.marker.color.push(color)
+                        this.layout.scene.xaxis = {range:[-5, 5]}
+                        this.layout.scene.yaxis = {range:[-1, 4]}
+                        this.layout.scene.zaxis = {range:[-5, 5]}
                     })
                     break
                 case "relativeHits":
@@ -158,9 +193,14 @@ export default {
                         data.y.push(record.hity - record.baty)
                         data.z.push(record.hitz - record.batz)
                         data.id.push(record.id)
+                        data.ballType.push(record.ball_type)
+                        data.playerId.push(record.player_id)
                         const color = 'rgba(255, 0, 0, ' + record.distance / 200 + ')'
                         data.marker.color.push(color)
                     })
+                    this.layout.scene.xaxis = {range:[-3, 3]}
+                    this.layout.scene.yaxis = {range:[-3, 3]}
+                    this.layout.scene.zaxis = {range:[-3, 3]}
                     break
             }
             this.records.items.forEach(processer)

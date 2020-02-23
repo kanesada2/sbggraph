@@ -41,6 +41,13 @@
         width="30%"
       >
         <span>打球の情報表示</span>
+        <ul>
+            <li>投手ID: {{selectedBall.pitcherId}}</li>
+            <li>球種: {{selectedBall.name}}</li>
+            <li>X: {{selectedBall.x}}</li>
+            <li>Y: {{selectedBall.y}}</li>
+            <li>Z: {{selectedBall.z}}</li>
+        </ul>
         <span slot="footer" class="dialog-footer">
             <el-button @click="pointSelected = false">閉じる</el-button>
             <el-button type="primary" @click="$router.push(targetUrl)">詳細</el-button>
@@ -75,9 +82,16 @@ export default {
                 },
             },
             options: {},
-            ids: [],
+            hitIds: [],
             targetUrl: "",
             pointSelected: false,
+            selectedBall: {
+                pitcherId: null,
+                name: "",
+                x: null,
+                y: null,
+                z: null
+            },
             ballTypes:{
                 "Fast": "rgba(231, 76, 60,", 
                 "Slider": "rgba(241, 196, 15,", 
@@ -109,16 +123,23 @@ export default {
             this.setupData()
         },
         showDialog(e){
+            this.selectedBall.pitcherId = e.points[0].data.playerId
+            this.selectedBall.name = e.points[0].data.name
+            this.selectedBall.x = e.points[0].data.x[0]
+            this.selectedBall.y = e.points[0].data.y[0]
+            this.selectedBall.z = e.points[0].data.z[0]
+
             const index = e.points[0].pointNumber;
-            this.targetUrl = "/hit/" + this.ids[index];
+            this.targetUrl = "/hit/" + this.hitIds[index];
             this.pointSelected = true;
         },
         recordsToData(){
             this.data = []
-            this.ids = []
+            this.hitIds = []
             this.records.items.forEach(record => {
                  let datum =  {
                     x:[], y: [], z: [],
+                    playerId: null,
                     mode: 'lines',
                     name: "",
                     marker: {
@@ -136,6 +157,7 @@ export default {
                 datum.z[0] = record.fromz
                 datum.z[1] = record.toz
                 datum.name = record.name
+                datum.playerId = record.player_id 
                 if(record.name in this.ballTypes){
                     datum.marker.color = this.ballTypes[record.name]
                 }else{
@@ -147,7 +169,7 @@ export default {
                 }
                 datum.marker.color += opacity + ')'
                 this.data.push(datum)
-                this.ids.push(record.hitid)
+                this.hitIds.push(record.hitid)
             })
         }
     }
