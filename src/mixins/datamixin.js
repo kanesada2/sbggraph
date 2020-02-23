@@ -1,4 +1,3 @@
-import authConfig from '@/authconfig'
 export default {
   data () {
     return {
@@ -8,7 +7,6 @@ export default {
       query: {},
       beforeQuery: {},
       players: [],
-      header: authConfig.token,
       loading: true
     }
   },
