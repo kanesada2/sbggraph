@@ -110,17 +110,7 @@ export default {
     },
     methods: {
         extract(){
-            let filterClause = {};
-            if(this.filter.ballType){
-                filterClause.name = this.filter.ballType
-            }
-            if(this.filter.pitcherId){
-                filterClause.player_id = this.filter.pitcherId
-            }
-            if(Object.keys(filterClause).length > 0){
-                this.query.q = JSON.stringify(filterClause);
-            }
-            this.setupData()
+            this.$router.push({query:this.filter}).catch(e => {e})
         },
         showDialog(e){
             this.selectedBall.pitcherId = e.points[0].data.playerId
@@ -131,6 +121,22 @@ export default {
 
             this.targetUrl = "/hit/" + e.points[0].data.hitId
             this.pointSelected = true;
+        },
+        prepareFilter()
+        {
+            if(Object.keys(this.$route.query).length <= 0) return;
+            const filter = JSON.parse(JSON.stringify(this.$route.query))
+            this.filter = filter
+            let q = {};
+            if(this.filter.ballType){
+                q.name = filter.ballType
+            }
+            if(this.filter.pitcherId){
+                q.player_id = filter.pitcherId
+            }
+            if(Object.keys(q).length > 0){
+                this.query.q = JSON.stringify(q);
+            }
         },
         recordsToData(){
             this.data = []

@@ -37,7 +37,7 @@ export default {
                 scene: {
                     camera: {
                         up:{x: 0, y: 1, z: 0},
-                        eye:{x: 0, y: 0, z: -1}
+                        eye:{x: 0, y: 0, z: 1}
                     },
                     xaxis: {range: [-5, 5]},
                     yaxis: {range: [-2, 5]},

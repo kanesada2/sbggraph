@@ -1,6 +1,6 @@
 <template>
   <div>
-      <el-tabs v-model="activeName" @tab-click="setupData" tabPosition="bottom" stretch>
+      <el-tabs v-model="activeName" @tab-click="extract" tabPosition="bottom" stretch>
         <el-tab-pane label="COURSE" name="absoluteHits">打ったボールの絶対座標</el-tab-pane>
         <el-tab-pane label="SWING" name="absoluteBats">ミートポイント(そこを狙って振った場所)の絶対座標</el-tab-pane>
         <el-tab-pane label="IMPACT" name="relativeHits">ミートポイントから見た打ったボールの相対的な座標</el-tab-pane>
@@ -28,8 +28,8 @@
             </el-select>
         </el-form-item>
         <el-form-item label="飛距離">
-            <el-input-number v-model="filter.distance.threshold" class="filterInput"/>
-            <el-select v-model="filter.distance.condition">
+            <el-input-number v-model="filter.distance" class="filterInput"/>
+            <el-select v-model="filter.operator">
                 <el-option label="指定なし" :value="null"/>
                 <el-option label="以上" value="$gte"/>
                 <el-option label="以下" value="$lte"/>
@@ -103,32 +103,20 @@ export default {
             filter:{
                 batterId: null,
                 ballType: null,
-                distance:{
-                    threshold: 0,
-                    condition: null
-                }
+                distance: 0,
+                operator: null
             },
             resourcePath : 'hits/',
         }
     },
     methods: {
         extract(){
-            if(this.filter.ballType){
-                this.resourcePath = 'typedhits/' + this.filter.ballType;
-            }else{
-                this.resourcePath = 'hits/'
+            let newQuery = this.filter
+            if(!newQuery.operator){
+                newQuery.distance = 0
             }
-            let filterClause = {};
-            if(this.filter.batterId){
-                filterClause.player_id = this.filter.batterId;
-            }
-            if(this.filter.distance.condition){
-                filterClause.distance = {[this.filter.distance.condition] :this.filter.distance.threshold};
-            }
-            if(Object.keys(filterClause).length > 0){
-                this.query.q = JSON.stringify(filterClause);
-            }
-            this.setupData()
+            newQuery.tab = this.activeName
+            this.$router.push({query:newQuery}).catch(e => {e})
         },
         showDialog(e){
             const index = e.points[0].pointNumber;
@@ -140,6 +128,27 @@ export default {
 
             this.targetUrl = "/hit/" + this.data[0].id[index];
             this.pointSelected = true;
+        },
+        prepareFilter(){
+            if(Object.keys(this.$route.query).length <= 0) return;
+            const filter = JSON.parse(JSON.stringify(this.$route.query))
+            this.activeName = filter.tab
+            this.filter = filter
+            if(filter.ballType){
+                this.resourcePath = 'typedhits/' + filter.ballType;
+            }else{
+                this.resourcePath = 'hits/'
+            }
+            let q = {};
+            if(filter.batterId){
+                q.player_id = filter.batterId;
+            }
+            if(filter.operator && !isNaN(filter.distance)){
+                q.distance = {[filter.operator] :Number(filter.distance)};
+            }
+            if(Object.keys(q).length > 0){
+                this.query.q = JSON.stringify(q);
+            }
         },
         recordsToData(){
             let data = { 
@@ -157,7 +166,7 @@ export default {
                 },
                 type: 'scatter3d'
             }
-            let processer = (record => {console.log(record)});
+            let processer = (record => {record/*console.log(record)*/});
             switch(this.activeName){
                 case "absoluteHits":
                     processer = (record => {

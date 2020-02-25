@@ -6,27 +6,37 @@ export default {
       records: null,
       query: {},
       beforeQuery: {},
+      beforeUrl: "",
       players: [],
       loading: true
     }
   },
   mounted(){
     this.preparePlayerData()
-    this.setupData();
+    this.prepareFilter()
+    this.setupData()
+  },
+  beforeRouteUpdate(to, from, next){
+    next()
+    this.preparePlayerData()
+    this.prepareFilter()
+    this.setupData()
   },
   methods: {
     async setupData(){
       this.loading = true
-      if(!this.records || this.query != this.beforeQuery){
+      const url = this.apiUrlBase + this.resourcePath
+      if(!this.records || this.query != this.beforeQuery || url != this.beforeUrl){
         await this.fetchRecords()
       }
       this.recordsToData()
       this.beforeQuery = JSON.parse(JSON.stringify(this.query))
+      this.beforeUrl = this.apiUrlBase + this.resourcePath
       this.query = {}
       this.loading = false
     },
     async fetchRecords(){
-      let url = this.apiUrlBase + this.resourcePath
+      const url = this.apiUrlBase + this.resourcePath
       const instance = this
       await this.$axios.get(url, {'params': this.query})
           .then((response) => {
@@ -38,7 +48,11 @@ export default {
     },
     recordsToData(){
     },
+    prepareFilter(){
+
+    },
     preparePlayerData(){
+      if(this.players.length > 0) return;
       const url = this.apiUrlBase + "players/"
       const instance = this
       this.$axios.get(url)
