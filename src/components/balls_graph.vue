@@ -93,13 +93,13 @@ export default {
                 z: null
             },
             ballTypes:{
-                "Fast": "rgba(231, 76, 60,", 
-                "Slider": "rgba(241, 196, 15,", 
-                "Curve": "rgba(230, 126, 34,", 
-                "Fork": "rgba(52, 152, 219,", 
-                "Shuuto": "rgba(39, 174, 96,", 
-                "Sinker": "rgba(22, 160, 133,", 
-                "Knuckle": "rgba(142, 68, 173,"
+                "Fast": "rgba(128, 0, 0,", 
+                "Slider": "rgba(245, 130, 48,", 
+                "Curve": "rgba(240, 50, 230,", 
+                "Fork": "rgba(0, 0, 128,", 
+                "Shuuto": "rgba(60, 180, 75,", 
+                "Sinker": "rgba(0, 128, 128,", 
+                "Knuckle": "rgba(70, 240, 240,"
             },
             filter:{
                 pitcherId: null,

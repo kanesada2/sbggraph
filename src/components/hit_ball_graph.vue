@@ -64,13 +64,13 @@ export default {
     methods: {
         getColor(name){
             const ballTypes = {
-                    "Fast": "rgba(231, 76, 60, 1.0)", 
-                    "Slider": "rgba(241, 196, 15, 1.0)", 
-                    "Curve": "rgba(230, 126, 34, 1.0)", 
-                    "Fork": "rgba(52, 152, 219, 1.0)", 
-                    "Shuuto": "rgba(39, 174, 96, 1.0)", 
-                    "Sinker": "rgba(22, 160, 133, 1.0)", 
-                    "Knuckle": "rgba(142, 68, 173, 1.0)"
+                "Fast": "rgba(128, 0, 0, 1.0)", 
+                "Slider": "rgba(245, 130, 48, 1.0)", 
+                "Curve": "rgba(240, 50, 230, 1.0)", 
+                "Fork": "rgba(0, 0, 128, 1.0)", 
+                "Shuuto": "rgba(60, 180, 75, 1.0)", 
+                "Sinker": "rgba(0, 128, 128, 1.0)", 
+                "Knuckle": "rgba(70, 240, 240, 1.0)"
             }
             if(name in ballTypes){
                 return ballTypes[name]
