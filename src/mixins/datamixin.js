@@ -4,6 +4,8 @@ export default {
       apiUrlBase: 'https://nllixik83jef2fa-spigot.adb.ap-tokyo-1.oraclecloudapps.com/ords/spigot/sbg/',
       resourcePath: '',
       records: null,
+      recordCount: "取得中...",
+      recordLimit: "取得中...",
       query: {},
       beforeQuery: {},
       beforeUrl: "",
@@ -30,6 +32,8 @@ export default {
         await this.fetchRecords()
       }
       this.recordsToData()
+      this.recordCount = this.records.count
+      this.recordLimit = this.records.limit
       this.beforeQuery = JSON.parse(JSON.stringify(this.query))
       this.beforeUrl = this.apiUrlBase + this.resourcePath
       this.query = {}

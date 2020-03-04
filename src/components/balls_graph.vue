@@ -9,6 +9,9 @@
           </span>
       </div>
       <Plotly :data="data" :layout="layout" @click="showDialog" v-loading="loading" />
+      <div>
+          抽出数:{{ recordCount }} / {{ recordLimit }}(表示可能数)
+      </div>
       <el-card class="box-card">
         <div slot="header" class="clearfix">
             <span>フィルター</span>
@@ -40,7 +43,6 @@
         :visible.sync="pointSelected"
         width="30%"
       >
-        <span>打球の情報表示</span>
         <ul>
             <li>投手ID: {{selectedBall.pitcherId}}</li>
             <li>球種: {{selectedBall.name}}</li>
